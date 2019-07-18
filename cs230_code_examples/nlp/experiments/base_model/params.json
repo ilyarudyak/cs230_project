@@ -6,5 +6,6 @@
     "lstm_hidden_dim": 50,
     "embedding_dim": 50,
 
-    "save_summary_steps": 100
+    "save_summary_steps": 100,
+    "cuda": 0
 }

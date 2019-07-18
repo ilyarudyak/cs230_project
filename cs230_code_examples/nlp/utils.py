@@ -6,7 +6,7 @@ import shutil
 import torch
 
 
-class Params():
+class Params:
     """Class that loads hyperparameters from a json file.
 
     Example:
@@ -38,7 +38,7 @@ class Params():
         return self.__dict__
 
 
-class RunningAverage():
+class RunningAverage:
     """A simple class that maintains the running average of a quantity
 
     Example:

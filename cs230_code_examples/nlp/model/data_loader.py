@@ -68,7 +68,7 @@ class DataLoader(object):
             for sentence in f.read().splitlines():
                 # replace each token by its index if it is in vocab
                 # else use index of UNK_WORD
-                s = [self.vocab[token] if token in self.vocab 
+                s = [self.vocab[token] if token in self.vocab
                      else self.unk_ind
                      for token in sentence.split(' ')]
                 sentences.append(s)
