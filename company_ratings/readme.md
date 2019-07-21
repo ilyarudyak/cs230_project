@@ -20,3 +20,4 @@ We get pretty high accuracy (around .8-.9) with some simplified assumptions.
 
 ## questions
 - stop words - should we use them?
+- how to prepare data for deep learning? do we need stemming and all of that?

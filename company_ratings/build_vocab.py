@@ -12,7 +12,6 @@ parser.add_argument('--data_dir', default='data/5w', help="Directory containing 
 
 # Hyper parameters for the vocab
 PAD_WORD = '<pad>'
-PAD_TAG = 'O'
 UNK_WORD = 'UNK'
 
 
@@ -85,7 +84,6 @@ def build_vocab(data_dir):
         'test_size': size_test_sentences,
         'number_of_tags': len(tags),
         'pad_word': PAD_WORD,
-        'pad_tag': PAD_TAG,
         'unk_word': UNK_WORD
     }
 
@@ -104,7 +102,6 @@ if __name__ == '__main__':
 
     # Add pad tokens
     if PAD_WORD not in words: words.append(PAD_WORD)
-    if PAD_TAG not in tags: tags.append(PAD_TAG)
 
     # add word for unknown words
     words.append(UNK_WORD)
