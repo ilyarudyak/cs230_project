@@ -6,7 +6,7 @@ import sys
 import torch
 from torch.autograd import Variable
 
-import utils 
+import utils
 
 
 class DataLoader(object):
@@ -68,6 +68,10 @@ class DataLoader(object):
             for review in f.read().splitlines():
                 # replace each token by its index if it is in vocab
                 # else use index of UNK_WORD
+
+                # we have to replace " (that we have from pandas to_csv)
+                review = review.replace('"', '')
+
                 s = [self.vocab[token] if token in self.vocab
                      else self.unk_ind
                      for token in review.split(' ')]
@@ -75,7 +79,10 @@ class DataLoader(object):
         
         with open(rating_file) as f:
             for rating in f.read().splitlines():
-                ratings.append(rating)
+                # make one-hot encoding
+                rating_one_hot = [0, 0]
+                rating_one_hot[int(rating)] = 1
+                ratings.append(rating_one_hot)
 
         # checks to ensure there is a tag for each token
         assert len(ratings) == len(reviews)
@@ -101,21 +108,21 @@ class DataLoader(object):
         
         for split in ['train', 'val', 'test']:
             if split in types:
-                sentences_file = os.path.join(data_dir, split, "sentences.txt")
-                labels_file = os.path.join(data_dir, split, "labels.txt")
+                sentences_file = os.path.join(data_dir, split, "review.txt")
+                labels_file = os.path.join(data_dir, split, "rating.txt")
                 data[split] = {}
                 self.load_sentences_labels(sentences_file, labels_file, data[split])
 
         return data
 
-    def data_iterator(self, data, params, shuffle=False):
+    def data_iterator(self, data, model_params, shuffle=False):
         """
         Returns a generator that yields batches data with labels. Batch size is params.batch_size. Expires after one
         pass over the data.
 
         Args:
             data: (dict) contains data which has keys 'data', 'labels' and 'size'
-            params: (Params) hyperparameters of the training process.
+            model_params: (Params) hyperparameters of the training process.
             shuffle: (bool) whether the data should be shuffled
 
         Yields:
@@ -127,40 +134,36 @@ class DataLoader(object):
         # make a list that decides the order in which we go over the data- this avoids explicit shuffling of data
         order = list(range(data['size']))
         if shuffle:
-            random.seed(230)
+            random.seed(42)
             random.shuffle(order)
 
         # one pass over data
-        for i in range((data['size']+1)//params.batch_size):
+        for i in range((data['size']+1) // model_params.batch_size):
             # fetch sentences and tags
-            batch_sentences = [data['data'][idx] for idx in order[i*params.batch_size:(i+1)*params.batch_size]]
-            batch_tags = [data['labels'][idx] for idx in order[i*params.batch_size:(i+1)*params.batch_size]]
-
-            # compute length of longest sentence in batch
-            batch_max_len = max([len(s) for s in batch_sentences])
+            batch_reviews = [data['data'][idx] for idx in order[i * model_params.batch_size:(i + 1) * model_params.batch_size]]
+            batch_ratings = [data['labels'][idx] for idx in order[i * model_params.batch_size:(i + 1) * model_params.batch_size]]
 
             # prepare a numpy array with the data, initialising the data with pad_ind and all labels with -1
             # initialising labels to -1 differentiates tokens with tags from PADding tokens
-            batch_data = self.pad_ind*np.ones((len(batch_sentences), batch_max_len))
-            batch_labels = -1*np.ones((len(batch_sentences), batch_max_len))
+            batch_reviews_pad = self.pad_ind * np.ones((model_params.batch_size, model_params.seq_len))
 
             # copy the data to the numpy array
-            for j in range(len(batch_sentences)):
-                cur_len = len(batch_sentences[j])
-                batch_data[j][:cur_len] = batch_sentences[j]
-                batch_labels[j][:cur_len] = batch_tags[j]
+            for j in range(model_params.batch_size):
+                review_len = len(batch_reviews[j])
+                cur_len = min(review_len, model_params.seq_len)
+                batch_reviews_pad[j][:cur_len] = batch_reviews[j][:cur_len]
 
             # since all data are indices, we convert them to torch LongTensors
-            batch_data, batch_labels = torch.LongTensor(batch_data), torch.LongTensor(batch_labels)
+            batch_reviews_pad, batch_labels = torch.LongTensor(batch_reviews_pad), torch.LongTensor(batch_ratings)
 
             # shift tensors to GPU if available
-            if params.cuda:
-                batch_data, batch_labels = batch_data.cuda(), batch_labels.cuda()
+            if model_params.cuda:
+                batch_reviews_pad, batch_labels = batch_reviews_pad.cuda(), batch_labels.cuda()
 
             # convert them to Variables to record operations in the computational graph
-            batch_data, batch_labels = Variable(batch_data), Variable(batch_labels)
+            batch_reviews_pad, batch_labels = Variable(batch_reviews_pad), Variable(batch_labels)
     
-            yield batch_data, batch_labels
+            yield batch_reviews_pad, batch_labels
 
 
 if __name__ == '__main__':
@@ -169,11 +172,13 @@ if __name__ == '__main__':
     data_dir = '../data/5w'
     dl = DataLoader(data_dir, params)
 
-    d = {}
-    review_file = '../data/5w/train/review.txt'
-    rating_file = '../data/5w/train/rating.txt'
-    dl.load_sentences_labels(review_file, rating_file, d)
+    types = ['train', 'val']
+    data = dl.load_data(types, data_dir)
 
-    print(d.keys())
-    print(d['data'][:5])
-    print(d['labels'][:5])
+    model_params_path = '../experiments/base_model/params.json'
+    model_params = utils.Params(model_params_path)
+    dl.load_data(data['train'], model_params)
+
+    it = dl.data_iterator(data['train'], model_params)
+    batch_reviews_pad, batch_labels = next(it)
+
