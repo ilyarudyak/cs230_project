@@ -175,7 +175,7 @@ if __name__ == '__main__':
     types = ['train', 'val']
     data = dl.load_data(types, data_dir)
 
-    model_params_path = '../experiments/base_model/params.json'
+    model_params_path = '../experiments/base_model/training_params.json'
     model_params = utils.Params(model_params_path)
     dl.load_data(data['train'], model_params)
 
