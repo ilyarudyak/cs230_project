@@ -11,5 +11,8 @@
     "dropout": 0.5,
 
     "save_summary_steps": 100,
-    "cuda": 0
+    "cuda": 0,
+
+    "vocab_size": 2697,
+    "number_of_tags": 2
 }

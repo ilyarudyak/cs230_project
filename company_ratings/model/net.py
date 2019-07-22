@@ -4,6 +4,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import scipy.special
 
+import utils
+
 
 class ReviewRNN(nn.Module):
     """
@@ -18,7 +20,7 @@ class ReviewRNN(nn.Module):
     The documentation for all the various components available to you is here: http://pytorch.org/docs/master/nn.html
     """
 
-    def __init__(self, dataset_params, training_params):
+    def __init__(self, params):
         """
         We define an recurrent network that predicts the NER tags for each token in the sentence. The components
         required are:
@@ -32,16 +34,16 @@ class ReviewRNN(nn.Module):
         """
         super().__init__()
 
-        self.embedding = nn.Embedding(num_embeddings=dataset_params.vocab_size,
-                                      embedding_dim=training_params.embedding_dim)
-        self.lstm = nn.LSTM(input_size=training_params.embedding_dim,
-                            hidden_size=training_params.lstm_hidden_dim,
-                            num_layers=training_params.n_layers,
-                            dropout=training_params.dropout,
+        self.embedding = nn.Embedding(num_embeddings=params.vocab_size,
+                                      embedding_dim=params.embedding_dim)
+        self.lstm = nn.LSTM(input_size=params.embedding_dim,
+                            hidden_size=params.lstm_hidden_dim,
+                            num_layers=params.n_layers,
+                            dropout=params.dropout,
                             batch_first=True)
-        self.dropout = nn.Dropout(p=training_params.dropout)
-        self.fc = nn.Linear(in_features=training_params.lstm_hidden_dim,
-                            out_features=dataset_params.number_of_tags)
+        self.dropout = nn.Dropout(p=params.dropout)
+        self.fc = nn.Linear(in_features=params.lstm_hidden_dim,
+                            out_features=params.number_of_tags)
         
     def forward(self, x):
         """
@@ -133,10 +135,10 @@ def accuracy(x_out, y):
     x_probs = scipy.special.softmax(x_out, axis=1)
     y_out = np.argmax(x_probs, axis=1)
 
-    y_flat = np.argmax(y, axis=1)
+    # y_flat = np.argmax(y, axis=1)
 
     # compare outputs with labels and divide by batch_size
-    return np.sum(y_out == y_flat) / float(batch_size)
+    return np.sum(y_out == y) / float(batch_size)
 
 
 # maintain all metrics required in this dictionary- these are used in the training and evaluation loops
@@ -144,3 +146,9 @@ metrics = {
     'accuracy': accuracy,
     # could add more metrics such as accuracy for each token type
 }
+
+
+if __name__ == '__main__':
+    params = utils.Params('../experiments/base_model/params.json')
+    rnn = ReviewRNN(params)
+    print(rnn)

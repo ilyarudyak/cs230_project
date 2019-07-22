@@ -79,10 +79,11 @@ class DataLoader(object):
         
         with open(rating_file) as f:
             for rating in f.read().splitlines():
-                # make one-hot encoding
-                rating_one_hot = [0, 0]
-                rating_one_hot[int(rating)] = 1
-                ratings.append(rating_one_hot)
+                # # make one-hot encoding
+                # rating_one_hot = [0, 0]
+                # rating_one_hot[int(rating)] = 1
+                # ratings.append(rating_one_hot)
+                ratings.append(int(rating))
 
         # checks to ensure there is a tag for each token
         assert len(ratings) == len(reviews)
@@ -138,7 +139,8 @@ class DataLoader(object):
             random.shuffle(order)
 
         # one pass over data
-        for i in range((data['size']+1) // model_params.batch_size):
+        for i in range(data['size'] // model_params.batch_size):
+            # print(f'i:{i}')
             # fetch sentences and tags
             batch_reviews = [data['data'][idx] for idx in order[i * model_params.batch_size:(i + 1) * model_params.batch_size]]
             batch_ratings = [data['labels'][idx] for idx in order[i * model_params.batch_size:(i + 1) * model_params.batch_size]]
@@ -175,7 +177,7 @@ if __name__ == '__main__':
     types = ['train', 'val']
     data = dl.load_data(types, data_dir)
 
-    model_params_path = '../experiments/base_model/training_params.json'
+    model_params_path = '../experiments/base_model/params.json'
     model_params = utils.Params(model_params_path)
     dl.load_data(data['train'], model_params)
 
