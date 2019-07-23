@@ -70,7 +70,7 @@ def train(model, optimizer, loss_fn,
             labels_batch = labels_batch.data.cpu().numpy()
 
             # compute all metrics on this batch
-            summary_batch = {metric:metrics[metric](output_batch, labels_batch)
+            summary_batch = {metric: metrics[metric](output_batch, labels_batch)
                              for metric in metrics}
             summary_batch['loss'] = loss.item()
             summary.append(summary_batch)
@@ -80,7 +80,7 @@ def train(model, optimizer, loss_fn,
         t.set_postfix(loss='{:05.3f}'.format(loss_avg()))
 
     # compute mean of all metrics in summary
-    metrics_mean = {metric:np.mean([x[metric] for x in summary]) for metric in summary[0]}
+    metrics_mean = {metric: np.mean([x[metric] for x in summary]) for metric in summary[0]}
     metrics_string = " ; ".join("{}: {:05.3f}".format(k, v) for k, v in metrics_mean.items())
     logging.info("- Train metrics: " + metrics_string)
     
@@ -129,7 +129,7 @@ def train_and_evaluate(model, train_data, val_data, data_loader,
         # Save weights
         utils.save_checkpoint({'epoch': epoch + 1,
                                'state_dict': model.state_dict(),
-                               'optim_dict' : optimizer.state_dict()}, 
+                               'optim_dict': optimizer.state_dict()},
                                is_best=is_best,
                                checkpoint=model_dir)
             
