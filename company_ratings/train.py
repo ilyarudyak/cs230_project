@@ -108,8 +108,9 @@ def train_and_evaluate(model, train_data, val_data, data_loader,
         utils.load_checkpoint(restore_path, model, optimizer)
         
     best_val_acc = 0.0
-
+    val_metrics_dict = {"accuracy": [], "loss": []}
     for epoch in range(params.num_epochs):
+
         # Run one epoch
         logging.info("Epoch {}/{}".format(epoch + 1, params.num_epochs))
 
@@ -122,6 +123,9 @@ def train_and_evaluate(model, train_data, val_data, data_loader,
         num_steps = params.val_size // params.batch_size
         val_data_iterator = data_loader.data_iterator(val_data, params, shuffle=False)
         val_metrics = evaluate(model, loss_fn, val_data_iterator, metrics, params, num_steps)
+
+        val_metrics_dict["accuracy"].append(val_metrics["accuracy"])
+        val_metrics_dict["loss"].append(val_metrics["loss"])
         
         val_acc = val_metrics['accuracy']
         is_best = val_acc >= best_val_acc
@@ -145,6 +149,9 @@ def train_and_evaluate(model, train_data, val_data, data_loader,
         # Save latest val metrics in a json file in the model directory
         last_json_path = os.path.join(model_dir, "metrics_val_last_weights.json")
         utils.save_dict_to_json(val_metrics, last_json_path)
+
+    val_metrics_list_json_path = os.path.join(model_dir, "val_metrics_list.json")
+    utils.save_dict_list_to_json(val_metrics_dict, val_metrics_list_json_path)
     
 
 if __name__ == '__main__':
