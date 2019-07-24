@@ -59,20 +59,21 @@ if __name__ == "__main__":
     #     job_name = "learning_rate_{}".format(learning_rate)
     #     launch_training_job(args.parent_dir, args.data_dir, job_name, params)
 
-    embedding_dim = [250, 300, 350, 400, 450, 500]
-    for dim in embedding_dim:
-        # Modify the relevant parameter in params
-        params.embedding_dim = dim
-
-        # Launch job (name has to be unique)
-        job_name = "embed_dim_{}".format(dim)
-        launch_training_job(args.parent_dir, args.data_dir, job_name, params)
-
-    # seq_len = [10, 15, 20, 25]
-    # for sl in seq_len:
+    # BEST OPTION 250
+    # embedding_dim = [250, 300, 350, 400, 450, 500]
+    # for dim in embedding_dim:
     #     # Modify the relevant parameter in params
-    #     params.seq_len = sl
+    #     params.embedding_dim = dim
     #
     #     # Launch job (name has to be unique)
-    #     job_name = "seq_len_{}".format(sl)
+    #     job_name = "embed_dim_{}".format(dim)
     #     launch_training_job(args.parent_dir, args.data_dir, job_name, params)
+
+    seq_len = [10, 15, 20, 25]
+    for sl in seq_len:
+        # Modify the relevant parameter in params
+        params.seq_len = sl
+
+        # Launch job (name has to be unique)
+        job_name = "seq_len_{}".format(sl)
+        launch_training_job(args.parent_dir, args.data_dir, job_name, params)
