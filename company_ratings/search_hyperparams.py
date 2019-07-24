@@ -69,11 +69,22 @@ if __name__ == "__main__":
     #     job_name = "embed_dim_{}".format(dim)
     #     launch_training_job(args.parent_dir, args.data_dir, job_name, params)
 
-    seq_len = [10, 15, 20, 25]
-    for sl in seq_len:
+    # BEST OPTION 20
+    # seq_len = [10, 15, 20, 25]
+    # for sl in seq_len:
+    #     # Modify the relevant parameter in params
+    #     params.seq_len = sl
+    #
+    #     # Launch job (name has to be unique)
+    #     job_name = "seq_len_{}".format(sl)
+    #     launch_training_job(args.parent_dir, args.data_dir, job_name, params)
+
+    batch_size = [8, 16, 32, 64, 128]
+    for bs in batch_size:
         # Modify the relevant parameter in params
-        params.seq_len = sl
+        params.batch_size = bs
 
         # Launch job (name has to be unique)
-        job_name = "seq_len_{}".format(sl)
+        job_name = "batch_size_{}".format(bs)
         launch_training_job(args.parent_dir, args.data_dir, job_name, params)
+

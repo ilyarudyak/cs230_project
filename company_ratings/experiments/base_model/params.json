@@ -1,12 +1,12 @@
 {
     "learning_rate": 1e-3,
-    "batch_size": 64,
+    "batch_size": 32,
     "num_epochs": 10,
 
-    "seq_len": 10,
+    "seq_len": 20,
 
     "lstm_hidden_dim": 32,
-    "embedding_dim": 50,
+    "embedding_dim": 250,
     "n_layers": 2,
     "dropout": 0.5,
 
