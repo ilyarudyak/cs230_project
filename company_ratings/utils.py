@@ -2,9 +2,13 @@ import json
 import logging
 import os
 import shutil
+import seaborn as sns
 
 import torch
 
+import matplotlib.pyplot as plt
+
+sns.set()
 
 class Params:
     """Class that loads hyperparameters from a json file.
@@ -155,8 +159,27 @@ def load_checkpoint(checkpoint, model, optimizer=None):
     return checkpoint
 
 
+def plot_metric(train_file, val_file, metric, filename):
+    with open(train_file) as f:
+        train_dict = json.load(f)
+
+    with open(val_file) as f:
+        val_dict = json.load(f)
+
+    x = range(len(train_dict[metric]))
+    train_metric = train_dict[metric]
+    val_metric = val_dict[metric]
+
+    plt.plot(x, train_metric, label='train')
+    plt.plot(x, val_metric, label='val')
+    plt.legend()
+    plt.title(f'metric: {metric}')
+    plt.savefig(filename)
+
+
 if __name__ == '__main__':
-    loss_avg = RunningAverage()
-    loss_avg.update(2)
-    loss_avg.update(4)
-    print(loss_avg())
+    train_file = 'experiments/base_model/metrics_train_list.json'
+    val_file = 'experiments/base_model/metrics_val_list.json'
+    metric = 'loss'
+    filename = 'plots/base_model_plot.png'
+    plot_metric(train_file, val_file, metric, filename)
