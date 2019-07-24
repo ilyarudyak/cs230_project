@@ -12,7 +12,7 @@ PYTHON = sys.executable
 parser = argparse.ArgumentParser()
 parser.add_argument('--parent_dir', default='experiments/learning_rate',
                     help='Directory containing params.json')
-parser.add_argument('--data_dir', default='data/small', help="Directory containing the dataset")
+parser.add_argument('--data_dir', default='data/5w', help="Directory containing the dataset")
 
 
 def launch_training_job(parent_dir, data_dir, job_name, params):
@@ -48,12 +48,21 @@ if __name__ == "__main__":
 
     # Perform hypersearch over one parameter
     # learning_rates = [1e-3, 1e-2, 1e-1, 1]
-    learning_rates = [.8 * 1e-3, .9 * 1e-3, 1.1 * 1e-3, 1.2 * 1e-3]
+    # learning_rates = [.8 * 1e-3, .9 * 1e-3, 1.1 * 1e-3, 1.2 * 1e-3]
+    #
+    # for learning_rate in learning_rates:
+    #     # Modify the relevant parameter in params
+    #     params.learning_rate = learning_rate
+    #
+    #     # Launch job (name has to be unique)
+    #     job_name = "learning_rate_{}".format(learning_rate)
+    #     launch_training_job(args.parent_dir, args.data_dir, job_name, params)
 
-    for learning_rate in learning_rates:
+    embedding_dim = [50, 100, 150, 200, 250]
+    for dim in embedding_dim:
         # Modify the relevant parameter in params
-        params.learning_rate = learning_rate
+        params.embedding_dim = dim
 
         # Launch job (name has to be unique)
-        job_name = "learning_rate_{}".format(learning_rate)
+        job_name = "embed_dim_{}".format(dim)
         launch_training_job(args.parent_dir, args.data_dir, job_name, params)
