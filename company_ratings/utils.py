@@ -175,6 +175,7 @@ def plot_metric(train_file, val_file, metric, filename):
     plt.legend()
     plt.title(f'metric: {metric}')
     plt.savefig(filename)
+    plt.clf()
 
 
 if __name__ == '__main__':
