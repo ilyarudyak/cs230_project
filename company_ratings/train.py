@@ -83,6 +83,7 @@ def train(model, optimizer, loss_fn,
     metrics_mean = {metric: np.mean([x[metric] for x in summary]) for metric in summary[0]}
     metrics_string = " ; ".join("{}: {:05.3f}".format(k, v) for k, v in metrics_mean.items())
     logging.info("- Train metrics: " + metrics_string)
+    return metrics_mean
     
 
 def train_and_evaluate(model, train_data, val_data, data_loader,
@@ -109,6 +110,7 @@ def train_and_evaluate(model, train_data, val_data, data_loader,
         
     best_val_acc = 0.0
     val_metrics_dict = {"accuracy": [], "loss": []}
+    train_metrics_dict = {"accuracy": [], "loss": []}
     for epoch in range(params.num_epochs):
 
         # Run one epoch
@@ -117,13 +119,18 @@ def train_and_evaluate(model, train_data, val_data, data_loader,
         # compute number of batches in one epoch (one full pass over the training set)
         num_steps = params.train_size // params.batch_size
         train_data_iterator = data_loader.data_iterator(train_data, params, shuffle=True)
-        train(model, optimizer, loss_fn, train_data_iterator, metrics, params, num_steps)
+        train_metrics = train(model, optimizer, loss_fn, train_data_iterator, metrics, params, num_steps)
+
+        # (NEW) save val metrics for plotting
+        train_metrics_dict["accuracy"].append(train_metrics["accuracy"])
+        train_metrics_dict["loss"].append(train_metrics["loss"])
             
         # Evaluate for one epoch on validation set
         num_steps = params.val_size // params.batch_size
         val_data_iterator = data_loader.data_iterator(val_data, params, shuffle=False)
         val_metrics = evaluate(model, loss_fn, val_data_iterator, metrics, params, num_steps)
 
+        # (NEW) save val metrics for plotting
         val_metrics_dict["accuracy"].append(val_metrics["accuracy"])
         val_metrics_dict["loss"].append(val_metrics["loss"])
         
@@ -150,7 +157,11 @@ def train_and_evaluate(model, train_data, val_data, data_loader,
         last_json_path = os.path.join(model_dir, "metrics_val_last_weights.json")
         utils.save_dict_to_json(val_metrics, last_json_path)
 
-    val_metrics_list_json_path = os.path.join(model_dir, "val_metrics_list.json")
+    # (NEW) save metrics into dictionary
+    train_metrics_list_json_path = os.path.join(model_dir, "metrics_train_list.json")
+    utils.save_dict_list_to_json(train_metrics_dict, train_metrics_list_json_path)
+
+    val_metrics_list_json_path = os.path.join(model_dir, "metrics_val_list.json")
     utils.save_dict_list_to_json(val_metrics_dict, val_metrics_list_json_path)
     
 
