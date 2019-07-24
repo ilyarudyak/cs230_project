@@ -47,7 +47,8 @@ if __name__ == "__main__":
     params = utils.Params(json_path)
 
     # Perform hypersearch over one parameter
-    learning_rates = [1e-4, 1e-3, 1e-2, 1e-1, 1]
+    # learning_rates = [1e-3, 1e-2, 1e-1, 1]
+    learning_rates = [.8 * 1e-3, .9 * 1e-3, 1.1 * 1e-3, 1.2 * 1e-3]
 
     for learning_rate in learning_rates:
         # Modify the relevant parameter in params

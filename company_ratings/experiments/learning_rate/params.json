@@ -1,7 +1,7 @@
 {
     "learning_rate": 1e-3,
     "batch_size": 64,
-    "num_epochs": 3,
+    "num_epochs": 10,
 
     "seq_len": 10,
 
