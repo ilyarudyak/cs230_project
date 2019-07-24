@@ -180,6 +180,7 @@ def plot_metric(train_file, val_file, metric, filename):
 if __name__ == '__main__':
     train_file = 'experiments/base_model/metrics_train_list.json'
     val_file = 'experiments/base_model/metrics_val_list.json'
-    metric = 'loss'
-    filename = 'plots/base_model_plot.png'
-    plot_metric(train_file, val_file, metric, filename)
+
+    for metric in ['accuracy', 'loss']:
+        filename = 'plots/base_model_plot_' + metric + '.png'
+        plot_metric(train_file, val_file, metric, filename)
