@@ -79,6 +79,7 @@ if __name__ == "__main__":
     #     job_name = "seq_len_{}".format(sl)
     #     launch_training_job(args.parent_dir, args.data_dir, job_name, params)
 
+    # BEST OPTION 8
     batch_size = [8, 16, 32, 64, 128]
     for bs in batch_size:
         # Modify the relevant parameter in params
