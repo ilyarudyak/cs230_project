@@ -20,7 +20,7 @@ class ReviewRNN(nn.Module):
     The documentation for all the various components available to you is here: http://pytorch.org/docs/master/nn.html
     """
 
-    def __init__(self, params):
+    def __init__(self, params, pretrained_embeddings=None):
         """
         We define an recurrent network that predicts the NER tags for each token in the sentence. The components
         required are:
@@ -31,11 +31,17 @@ class ReviewRNN(nn.Module):
 
         Args:
             training_params: (Params) contains vocab_size, embedding_dim, lstm_hidden_dim
+            (NEW) pretrained_embeddings (numpy array): contains pretrained embeddings
         """
         super().__init__()
 
-        self.embedding = nn.Embedding(num_embeddings=params.vocab_size,
-                                      embedding_dim=params.embedding_dim)
+        if pretrained_embeddings is None:
+            self.embedding = nn.Embedding(num_embeddings=params.vocab_size,
+                                          embedding_dim=params.embedding_dim)
+        else:
+            pretrained_embeddings = torch.from_numpy(pretrained_embeddings).float()
+            self.embedding = nn.Embedding.from_pretrained(pretrained_embeddings)
+
         self.lstm = nn.LSTM(input_size=params.embedding_dim,
                             hidden_size=params.lstm_hidden_dim,
                             num_layers=params.n_layers,

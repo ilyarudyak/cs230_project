@@ -15,6 +15,8 @@ import model.net as net
 from data_prep.data_loader import DataLoader
 from evaluate import evaluate
 
+from pathlib import Path
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_dir', default='data/5w', help="Directory containing the dataset")
@@ -200,7 +202,16 @@ if __name__ == '__main__':
     logging.info("- done.")
 
     # Define the model and optimizer
-    model = net.ReviewRNN(params).cuda() if params.cuda else net.ReviewRNN(params)
+    # (NEW) build model with pretrained embeddings
+    glove_filepath = os.path.join(str(Path.home()), 'data/glove.6B/glove.6B.50d.txt')
+    words_filepath = os.path.join(args.data_dir, 'words.txt')
+    with open(words_filepath) as f:
+        words = f.read().split()
+    pretrained_embeddings = utils.make_embedding_matrix(glove_filepath, words)
+    model = net.ReviewRNN(params, pretrained_embeddings)
+    print(pretrained_embeddings.shape)
+
+    # model = net.ReviewRNN(params).cuda() if params.cuda else net.ReviewRNN(params)
     optimizer = optim.Adam(model.parameters(), lr=params.learning_rate)
     
     # fetch loss function and metrics
