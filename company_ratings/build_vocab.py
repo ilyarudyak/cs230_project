@@ -94,7 +94,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     vocab, tags, sizes = build_vocab(args.data_dir)
-    print(vocab)
+    # print(vocab)
 
     # Only keep most frequent tokens
     words = [tok for tok, count in vocab.items() if count >= args.min_count_word]

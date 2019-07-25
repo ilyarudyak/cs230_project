@@ -203,7 +203,7 @@ if __name__ == '__main__':
 
     # Define the model and optimizer
     # (NEW) build model with pretrained embeddings
-    glove_filepath = os.path.join(str(Path.home()), 'data/glove.6B/glove.6B.50d.txt')
+    glove_filepath = os.path.join(str(Path.home()), 'data/glove.6B/glove.6B.300d.txt')
     words_filepath = os.path.join(args.data_dir, 'words.txt')
     with open(words_filepath) as f:
         words = f.read().split()
