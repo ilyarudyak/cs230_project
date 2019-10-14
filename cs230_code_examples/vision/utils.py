@@ -4,10 +4,8 @@ import os
 import shutil
 
 import torch
-import numpy as np
 
-
-class Params:
+class Params():
     """Class that loads hyperparameters from a json file.
 
     Example:
@@ -26,7 +24,7 @@ class Params:
     def save(self, json_path):
         with open(json_path, 'w') as f:
             json.dump(self.__dict__, f, indent=4)
-
+            
     def update(self, json_path):
         """Loads parameters from json file"""
         with open(json_path) as f:
@@ -39,9 +37,9 @@ class Params:
         return self.__dict__
 
 
-class RunningAverage:
+class RunningAverage():
     """A simple class that maintains the running average of a quantity
-
+    
     Example:
     ```
     loss_avg = RunningAverage()
@@ -50,19 +48,18 @@ class RunningAverage:
     loss_avg() = 3
     ```
     """
-
     def __init__(self):
         self.steps = 0
         self.total = 0
-
+    
     def update(self, val):
         self.total += val
         self.steps += 1
-
+    
     def __call__(self):
-        return self.total / float(self.steps)
-
-
+        return self.total/float(self.steps)
+        
+    
 def set_logger(log_path):
     """Set the logger to log info in terminal and file `log_path`.
 
@@ -135,7 +132,7 @@ def load_checkpoint(checkpoint, model, optimizer=None):
         optimizer: (torch.optim) optional: resume optimizer from checkpoint
     """
     if not os.path.exists(checkpoint):
-        raise ("File doesn't exist {}".format(checkpoint))
+        raise("File doesn't exist {}".format(checkpoint))
     checkpoint = torch.load(checkpoint)
     model.load_state_dict(checkpoint['state_dict'])
 
@@ -143,5 +140,3 @@ def load_checkpoint(checkpoint, model, optimizer=None):
         optimizer.load_state_dict(checkpoint['optim_dict'])
 
     return checkpoint
-
-

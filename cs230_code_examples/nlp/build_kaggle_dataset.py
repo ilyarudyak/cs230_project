@@ -67,12 +67,15 @@ if __name__ == "__main__":
     dataset = load_dataset(path_dataset)
     print("- done.")
 
-    # Split the dataset into train, val and split (dummy split with no shuffle)
-    train_dataset = dataset[:int(0.7*len(dataset))]
-    val_dataset = dataset[int(0.7*len(dataset)) : int(0.85*len(dataset))]
-    test_dataset = dataset[int(0.85*len(dataset)):]
+    print(dataset[:10])
 
-    # Save the datasets to files
-    save_dataset(train_dataset, 'data/kaggle/train')
-    save_dataset(val_dataset, 'data/kaggle/val')
-    save_dataset(test_dataset, 'data/kaggle/test')
+
+    # # Split the dataset into train, val and split (dummy split with no shuffle)
+    # train_dataset = dataset[:int(0.7*len(dataset))]
+    # val_dataset = dataset[int(0.7*len(dataset)) : int(0.85*len(dataset))]
+    # test_dataset = dataset[int(0.85*len(dataset)):]
+    #
+    # # Save the datasets to files
+    # save_dataset(train_dataset, 'data/kaggle/train')
+    # save_dataset(val_dataset, 'data/kaggle/val')
+    # save_dataset(test_dataset, 'data/kaggle/test')
