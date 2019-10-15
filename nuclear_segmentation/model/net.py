@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import numpy as np
 
 
 class ConvBlock(nn.Module):
@@ -69,4 +70,30 @@ class Unet(nn.Module):
         x = self.conv9(x)
         x = self.conv10(x)
         return x
+
+
+def loss_fn(outputs, targets):
+    criterion = nn.BCEWithLogitsLoss()
+    return criterion(outputs, targets)
+
+
+def accuracy(outputs, targets):
+    """
+    Compute the accuracy, given the outputs and labels for all images.
+
+    Args:
+        outputs: (np.ndarray) dimension batch_size x 6 - log softmax output of the model
+        targets: (np.ndarray) dimension batch_size, where each element is a value in [0, 1, 2, 3, 4, 5]
+
+    Returns: (float) accuracy in [0,1]
+    """
+    # outputs = np.argmax(outputs, axis=1)
+    return np.sum(outputs == targets) / float(targets.size)
+
+
+# maintain all metrics required in this dictionary- these are used in the training and evaluation loops
+metrics = {
+    'accuracy': accuracy,
+    # could add more metrics such as accuracy for each token type
+}
 

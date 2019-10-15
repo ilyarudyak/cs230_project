@@ -16,8 +16,8 @@ import model.data_loader as data_loader
 from evaluate import evaluate
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--data_dir', default='data/64x64_SIGNS',
-                    help="Directory containing the dataset")
+# parser.add_argument('--data_dir', default='data/64x64_SIGNS',
+#                     help="Directory containing the dataset")
 parser.add_argument('--model_dir', default='experiments/base_model',
                     help="Directory containing params.json")
 parser.add_argument('--restore_file', default=None,
@@ -176,8 +176,7 @@ if __name__ == '__main__':
     logging.info("Loading the datasets...")
 
     # fetch dataloaders
-    dataloaders = data_loader.fetch_dataloader(
-        ['train', 'val'], args.data_dir, params)
+    dataloaders = data_loader.fetch_dataloader(['train', 'val'], params)
     train_dl = dataloaders['train']
     val_dl = dataloaders['val']
 
