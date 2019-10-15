@@ -11,6 +11,7 @@
       <sourceFolder url="file://$MODULE_DIR$/cs230_code_examples/nlp/model" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/cs230_code_examples/vision" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/nuclear_segmentation" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/nuclear_segmentation/model" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
     <orderEntry type="inheritedJdk" />
