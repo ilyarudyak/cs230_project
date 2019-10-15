@@ -77,7 +77,7 @@ def loss_fn(outputs, targets):
     return criterion(outputs, targets)
 
 
-def accuracy(outputs, targets):
+def accuracy(outputs, targets, thresh=0.5):
     """
     Compute the accuracy, given the outputs and labels for all images.
 
@@ -87,7 +87,9 @@ def accuracy(outputs, targets):
 
     Returns: (float) accuracy in [0,1]
     """
-    # outputs = np.argmax(outputs, axis=1)
+
+    outputs[outputs >= thresh] = 1.
+    outputs[outputs < thresh] = 0.
     return np.sum(outputs == targets) / float(targets.size)
 
 
