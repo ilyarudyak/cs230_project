@@ -10,7 +10,7 @@ from torchvision import transforms
 data_dir = Path.home() / 'data/isbi2012/'
 args = Namespace(
     path_img_train=data_dir / 'train-volume.tif',
-    path_target_test=data_dir / 'train-labels.tif',
+    path_target_train=data_dir / 'train-labels.tif',
     path_img_test=data_dir / 'test-volume.tif',
     n_valid=5,
     TRAIN='train',
