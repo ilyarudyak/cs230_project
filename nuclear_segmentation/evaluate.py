@@ -79,7 +79,7 @@ def predict(model, dataloader, thresh=.5):
     predictions = []
     for data_batch, _ in dataloader:
         if torch.cuda.is_available():
-            data_batch, _ = data_batch.cuda(non_blocking=True)
+            data_batch = data_batch.cuda(non_blocking=True)
         data_batch = Variable(data_batch)
 
         # compute model output
@@ -91,8 +91,8 @@ def predict(model, dataloader, thresh=.5):
             prediction = prediction.data.cpu().numpy()
 
             # convert into 0s and 1s
-            prediction[prediction >= thresh] = 1
-            prediction[prediction < thresh] = 0
+            prediction[prediction >= thresh] = 1.
+            prediction[prediction < thresh] = 0.
 
             predictions.append(prediction)
 
