@@ -74,8 +74,7 @@ class ISBI2012Dataset(Dataset):
 
         if self.transforms:
             img = self.transforms(img)
-            if self.split != args.TEST:
-                target = self.transforms(target)
+            target = self.transforms(target)
 
         return img, target
 

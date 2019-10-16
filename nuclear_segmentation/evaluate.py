@@ -71,6 +71,34 @@ def evaluate(model, loss_fn, dataloader, metrics, params):
     return metrics_mean
 
 
+def predict(model, dataloader, thresh=.5):
+
+    # set model to evaluation mode
+    model.eval()
+
+    predictions = []
+    for data_batch, _ in dataloader:
+        if torch.cuda.is_available():
+            data_batch, _ = data_batch.cuda(non_blocking=True)
+        data_batch = Variable(data_batch)
+
+        # compute model output
+        output_batch = model(data_batch)
+        prediction_batch = [torch.sigmoid(output_image) for output_image in output_batch]
+
+        # extract data from torch Variable, move to cpu, convert to numpy arrays
+        for prediction in prediction_batch:
+            prediction = prediction.data.cpu().numpy()
+
+            # convert into 0s and 1s
+            prediction[prediction >= thresh] = 1
+            prediction[prediction < thresh] = 0
+
+            predictions.append(prediction)
+
+    return np.array(predictions)
+
+
 if __name__ == '__main__':
     """
         Evaluate the model on the test set.
