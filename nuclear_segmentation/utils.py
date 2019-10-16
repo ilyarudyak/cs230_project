@@ -4,6 +4,7 @@ import os
 import shutil
 
 import torch
+import pandas as pd
 
 
 class Params:
@@ -142,3 +143,9 @@ def load_checkpoint(checkpoint, model, optimizer=None):
         optimizer.load_state_dict(checkpoint['optim_dict'])
 
     return checkpoint
+
+
+def save_history(model_dir, history):
+    history_path = os.path.join(model_dir, "history.csv")
+    df = pd.DataFrame(history)
+    df.to_csv(history_path, index=False)

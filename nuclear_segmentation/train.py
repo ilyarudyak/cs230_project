@@ -91,6 +91,8 @@ def train(model, optimizer, loss_fn, dataloader, metrics, params):
                                 for k, v in metrics_mean.items())
     logging.info("- Train metrics: " + metrics_string)
 
+    return metrics_mean
+
 
 def train_and_evaluate(model, train_dataloader, val_dataloader, optimizer, loss_fn, metrics, params, model_dir,
                        restore_file=None):
@@ -108,6 +110,11 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, optimizer, loss_
         restore_file: (string) optional- name of file to restore from (without its extension .pth.tar)
     """
     # reload weights from restore_file if specified
+
+    # NEW! contains train and valid accuracy and loss
+    # list of dictionaries for each epoch
+    history = []
+
     if restore_file is not None:
         restore_path = os.path.join(
             args.model_dir, args.restore_file + '.pth.tar')
@@ -121,10 +128,21 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, optimizer, loss_
         logging.info("Epoch {}/{}".format(epoch + 1, params.num_epochs))
 
         # compute number of batches in one epoch (one full pass over the training set)
-        train(model, optimizer, loss_fn, train_dataloader, metrics, params)
+        train_metrics = train(model, optimizer, loss_fn, train_dataloader, metrics, params)
+
+        # NEW! fill in current history with training metrics
+        cur_history = {
+            'train_acc': train_metrics['accuracy'],
+            'train_loss': train_metrics['loss']
+        }
 
         # Evaluate for one epoch on validation set
         val_metrics = evaluate(model, loss_fn, val_dataloader, metrics, params)
+
+        # NEW! fill in current history with valid metrics
+        cur_history['val_acc'] = val_metrics['accuracy']
+        cur_history['val_loss'] = val_metrics['loss']
+        history.append(cur_history)
 
         val_acc = val_metrics['accuracy']
         is_best = val_acc >= best_val_acc
@@ -133,8 +151,8 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, optimizer, loss_
         utils.save_checkpoint({'epoch': epoch + 1,
                                'state_dict': model.state_dict(),
                                'optim_dict': optimizer.state_dict()},
-                              is_best=is_best,
-                              checkpoint=model_dir)
+                               is_best=is_best,
+                               checkpoint=model_dir)
 
         # If best_eval, best_save_path
         if is_best:
@@ -150,6 +168,9 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, optimizer, loss_
         last_json_path = os.path.join(
             model_dir, "metrics_val_last_weights.json")
         utils.save_dict_to_json(val_metrics, last_json_path)
+
+        # NEW! save history into csv file
+        utils.save_history(model_dir, history)
 
 
 if __name__ == '__main__':
