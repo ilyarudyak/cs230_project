@@ -72,6 +72,9 @@ def evaluate(model, loss_fn, dataloader, metrics, params):
 
 
 def predict_image(model, image, use_thresh=True, thresh=.5):
+
+    model.eval()
+
     if isinstance(image, np.ndarray):
         image = torch.from_numpy(image)
 
@@ -89,10 +92,7 @@ def predict_image(model, image, use_thresh=True, thresh=.5):
     return prediction.numpy()
 
 
-def predict_dataloader(model, dataloader, use_thresh = True, thresh=.5):
-
-    # set model to evaluation mode
-    model.eval()
+def predict_dataloader(model, dataloader, use_thresh=True, thresh=.5):
 
     predictions = []
     for data_batch, _ in dataloader:

@@ -1,0 +1,19 @@
+---
+Evaluating segmentation...
+  Original labels: preds.tif
+  Proposed labels: test-volume.tif
+
+
+Calculating maximal foreground-restricted Rand score after thinning...
+  Calculating Rand score statistics after border thinning for threshold value 0.000...
+    V_Rand = 0.165425575095045
+ ** Best V_Rand = 0.165425575095045, with threshold = 0.000 **
+
+  Maximum foreground-restricted Rand score after thinning: 0.165425575095045
+
+Calculating maximal foreground-restricted information theoretic score after thinning...
+  Calculating foreground-restricted information theoretic score after border thinning for threshold value 0.000...
+    V_info = 2.453362675621221E-5
+ ** Best V_info = 2.453362675621221E-5, with threshold = 0.000 **
+
+  Maximum foreground-restricted information theoretic score after thinning: 2.453362675621221E-5
