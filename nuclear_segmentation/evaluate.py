@@ -71,7 +71,25 @@ def evaluate(model, loss_fn, dataloader, metrics, params):
     return metrics_mean
 
 
-def predict(model, dataloader, thresh=.5):
+def predict_image(model, image, use_thresh=True, thresh=.5):
+    if isinstance(image, np.ndarray):
+        image = torch.from_numpy(image)
+
+    image = Variable(image.unsqueeze(0))
+    if torch.cuda.is_available():
+        image = image.cuda()
+
+    prediction = torch.sigmoid(model(image)).data.cpu()
+
+    if use_thresh:
+        # convert into 0s and 1s
+        prediction[prediction >= thresh] = 1.
+        prediction[prediction < thresh] = 0.
+
+    return prediction.numpy()
+
+
+def predict_dataloader(model, dataloader, use_thresh = True, thresh=.5):
 
     # set model to evaluation mode
     model.eval()
@@ -90,9 +108,10 @@ def predict(model, dataloader, thresh=.5):
         for prediction in prediction_batch:
             prediction = prediction.data.cpu().numpy()
 
-            # convert into 0s and 1s
-            prediction[prediction >= thresh] = 1.
-            prediction[prediction < thresh] = 0.
+            if use_thresh:
+                # convert into 0s and 1s
+                prediction[prediction >= thresh] = 1.
+                prediction[prediction < thresh] = 0.
 
             predictions.append(prediction)
 
