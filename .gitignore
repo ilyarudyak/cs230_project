@@ -245,3 +245,5 @@ pip-selfcheck.json
 *.tif
 *.tiff
 *.net
+*.png
+/nuclear_segmentation/unet-example-korea/readme_images/

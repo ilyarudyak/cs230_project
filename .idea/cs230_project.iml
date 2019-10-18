@@ -14,6 +14,8 @@
       <sourceFolder url="file://$MODULE_DIR$/nuclear_segmentation/model" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/nuclear_segmentation/unet-example-simple" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/nuclear_segmentation/unet-example-klibisz" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/nuclear_segmentation/unet-example-korea" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/nuclear_segmentation/unet-example-korea/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
     <orderEntry type="inheritedJdk" />
