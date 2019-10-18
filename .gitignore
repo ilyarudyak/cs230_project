@@ -242,4 +242,6 @@ pip-selfcheck.json
 /company_ratings/data/
 /company_ratings/experiments/
 /company_ratings/plots/
-*.gif
+*.tif
+*.tiff
+*.net
