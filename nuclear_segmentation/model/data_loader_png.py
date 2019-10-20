@@ -1,5 +1,6 @@
 from argparse import Namespace
 import torch
+from PIL import Image
 from tifffile import TiffFile
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
@@ -8,12 +9,13 @@ from torchvision import transforms
 from torchvision.transforms import Compose
 import PIL
 
-data_dir = Path.home() / 'data/isbi2012/'
+data_dir = Path.home() / 'data/isbi2012/pngs'
 args = Namespace(
-    path_img_train=data_dir / 'train-volume.tif',
-    path_target_train=data_dir / 'train-labels.tif',
-    path_img_test=data_dir / 'test-volume.tif',
-    n_valid=3,  # we split our 30 examples between train and valid sets
+    path_img_train=data_dir / 'train/images',
+    path_target_train=data_dir / 'train/masks',
+    path_img_val=data_dir / 'val/images',
+    path_target_val=data_dir / 'val/masks',
+    path_img_test=data_dir / 'test/images',
     TRAIN='train',
     VAL='val',
     TEST='test'
@@ -40,7 +42,6 @@ def get_transforms_stanford():
     :return: train_transforms, val_transforms
     """
     train_transforms = transforms.Compose([
-        transforms.ToPILImage(),
         transforms.RandomAffine(degrees=.2,
                                 translate=(.05, .05),
                                 shear=.05,
@@ -58,31 +59,19 @@ def get_transforms_stanford():
 class ISBI2012Dataset(Dataset):
 
     def __init__(self,
-                 path_img,
-                 path_target=None,
                  transforms=None,
-                 split=args.TRAIN,
-                 n_valid=args.n_valid):
+                 split=args.TRAIN):
 
-        # read .tif files into numpy arrays (30, 512, 512) - so called 'an image with scalar data'
-        # and add a dimension (30, 512, 512, 1), where 30 is the number of training images
         self.split = split
 
-        self.images = np.expand_dims(TiffFile(path_img).asarray(), axis=-1)
-        self.length = len(self.images)
-
-        self.targets = None
-        if path_target:
-            self.targets = np.expand_dims(TiffFile(path_target).asarray(), axis=-1)
-
         if split == args.TRAIN:
-            self.images = self.images[:(self.length-n_valid)]
-            self.targets = self.targets[:(self.length-n_valid)]
+            self.images = [Image.open(f) for f in args.path_img_train.glob('*')]
+            self.targets = [Image.open(f) for f in args.path_target_train.glob('*')]
         elif split == args.VAL:
-            self.images = self.images[(self.length-n_valid):]
-            self.targets = self.targets[(self.length-n_valid):]
+            self.images = [Image.open(f) for f in args.path_img_val.glob('*')]
+            self.targets = [Image.open(f) for f in args.path_target_val.glob('*')]
         elif split == args.TEST:
-            pass
+            self.images = [Image.open(f) for f in args.path_img_test.glob('*')]
         else:
             raise IndexError('illegal type')
 
@@ -93,9 +82,10 @@ class ISBI2012Dataset(Dataset):
 
     def __getitem__(self, idx):
         img = self.images[idx]
-        target = np.zeros_like(img)
         if self.split != args.TEST:
             target = self.targets[idx]
+        else:
+            target = np.zeros_like(img)
 
         if self.transforms:
             # it's necessary to apply the same transforms to target!
@@ -116,6 +106,7 @@ def fetch_dataloader(splits, params):
     Returns:
         dataloaders: (dict) contains the DataLoader object for each type in types
     """
+
     # train_transforms, val_transforms = get_transforms_initial()
     train_transforms, val_transforms = get_transforms_stanford()
 
@@ -124,27 +115,21 @@ def fetch_dataloader(splits, params):
     for split in splits:
 
         if split == args.TRAIN:
-            dl = DataLoader(ISBI2012Dataset(path_img=args.path_img_train,
-                                            path_target=args.path_target_train,
-                                            transforms=train_transforms,
+            dl = DataLoader(ISBI2012Dataset(transforms=train_transforms,
                                             split=args.TRAIN),
                             batch_size=params.batch_size,
                             shuffle=True,
                             num_workers=0,
                             pin_memory=params.cuda)
         elif split == args.VAL:
-            dl = DataLoader(ISBI2012Dataset(path_img=args.path_img_train,
-                                            path_target=args.path_target_train,
-                                            transforms=train_transforms,
+            dl = DataLoader(ISBI2012Dataset(transforms=val_transforms,
                                             split=args.VAL),
                             batch_size=params.batch_size,
-                            shuffle=True,
+                            shuffle=False,
                             num_workers=0,
                             pin_memory=params.cuda)
         elif split == args.TEST:
-            dl = DataLoader(ISBI2012Dataset(path_img=args.path_img_test,
-                                            path_target=None,
-                                            transforms=val_transforms,
+            dl = DataLoader(ISBI2012Dataset(transforms=val_transforms,
                                             split=args.TEST),
                             batch_size=params.batch_size,
                             shuffle=False,

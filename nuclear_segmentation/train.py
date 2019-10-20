@@ -12,8 +12,10 @@ from tqdm import tqdm
 
 import utils
 import model.net as net
-import model.data_loader as data_loader
 from evaluate import evaluate
+
+# import model.data_loader_tif as data_loader
+import model.data_loader_png as data_loader
 
 parser = argparse.ArgumentParser()
 # parser.add_argument('--data_dir', default='data/64x64_SIGNS',
