@@ -116,7 +116,9 @@ def fetch_dataloader(splits, params):
     Returns:
         dataloaders: (dict) contains the DataLoader object for each type in types
     """
-    train_transforms, val_transforms = get_transforms_initial()
+    # train_transforms, val_transforms = get_transforms_initial()
+    train_transforms, val_transforms = get_transforms_stanford()
+
     dataloaders = {}
 
     for split in splits:
