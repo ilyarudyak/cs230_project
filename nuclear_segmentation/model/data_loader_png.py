@@ -8,6 +8,8 @@ from pathlib import Path
 from torchvision import transforms
 from torchvision.transforms import Compose
 import PIL
+import random
+import sys
 
 data_dir = Path.home() / 'data/isbi2012/pngs'
 args = Namespace(
@@ -26,7 +28,8 @@ def get_transforms_initial():
     train_transforms = transforms.Compose([
         transforms.ToTensor()
     ])
-    val_transforms: Compose = transforms.Compose([
+
+    val_transforms = transforms.Compose([
         transforms.ToTensor()
     ])
 
@@ -49,7 +52,8 @@ def get_transforms_stanford():
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor()
     ])
-    val_transforms: Compose = transforms.Compose([
+
+    val_transforms = transforms.Compose([
         transforms.ToTensor()
     ])
 
@@ -89,7 +93,14 @@ class ISBI2012Dataset(Dataset):
 
         if self.transforms:
             # it's necessary to apply the same transforms to target!
+            seed = random.randrange(sys.maxsize)
+
+            random.seed(seed)
+            torch.manual_seed(seed)
             img = self.transforms(img)
+
+            random.seed(seed)
+            torch.manual_seed(seed)
             target = self.transforms(target)
 
         return img, target

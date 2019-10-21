@@ -16,6 +16,7 @@
       <sourceFolder url="file://$MODULE_DIR$/nuclear_segmentation/unet-example-klibisz" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/nuclear_segmentation/unet-example-korea" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/nuclear_segmentation/unet-example-korea/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/epithelium_segmentation" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
     <orderEntry type="inheritedJdk" />
